@@ -9,6 +9,12 @@ const COUCHDB_DBNAME = process.env.COUCHDB_DBNAME || 'feracode';
 exports.index = async function(req, res) {
   const db = await couchdb.use(COUCHDB_DBNAME);
   await db.list().then(async docs => {
+    for(var a in docs.rows) {
+      let id = docs.rows[a].id;
+      await db.get(id, { rev_info: true }).then(doc => {
+        docs.rows[a].data = doc;
+      });
+    }
     Logger.info(`User (IP=${req.ip}) retrieve all diapers. Body=${docs}`);
     await res.send({
       code: 200,
@@ -75,7 +81,7 @@ exports.show = async function(req, res) {
   const db = await couchdb.use(COUCHDB_DBNAME);
   var id = req.params.id;
   await db.get(id, { rev_info: true }).then(async doc => {
-    Logger.inf(`User (IP=${req.ip}) retrieved diaper details. Body=${dov}`);
+    Logger.info(`User (IP=${req.ip}) retrieved diaper details. Body=${doc}`);
     await res.send({
       code: 200,
       message: 'diaper retrieve with success',
@@ -105,6 +111,7 @@ exports.update = async function(req, res) {
     var boughtL = req.body.boughtL || doc.boughtL;
     var boughtM = req.body.boughtM || doc.boughtM;
     var boughtP = req.body.boughtP || doc.boughtP;
+    var actived = doc.active;
     await db.insert({
       model: model,
       description: description,
@@ -114,6 +121,7 @@ exports.update = async function(req, res) {
       boughtL: boughtL,
       boughtM: boughtM,
       boughtP: boughtP,
+      active: actived,
       _rev: doc._rev
     }, id).then(async (body) => {
       Logger.info(`User (IP=${req.ip}) update a diaper data. Body=${body}`);
@@ -190,8 +198,24 @@ async function changeActiveStatus(activeStatus, req, res) {
   const db = await couchdb.use(COUCHDB_DBNAME);
   var id = req.params.id;
   await db.get(id).then(async doc => {
+    var model = doc.model;
+    var description = doc.description;
+    var availableL = doc.availableL;
+    var availableM = doc.availableM;
+    var availableP = doc.availableP;
+    var boughtL = doc.boughtL;
+    var boughtM = doc.boughtM;
+    var boughtP = doc.boughtP;
     var actived = activeStatus;
     await db.insert({
+      model: model,
+      description: description,
+      availableL: availableL,
+      availableM: availableM,
+      availableP: availableP,
+      boughtL: boughtL,
+      boughtM: boughtM,
+      boughtP: boughtP,
       active: actived,
       _rev: doc._rev
     }, id).then(async (body) => {
