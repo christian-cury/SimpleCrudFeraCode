@@ -72,15 +72,15 @@
             <span>CRUD</span>
           </a>
           <div class="dropdown-menu" aria-labelledby="pagesDropdown">
-            <router-link class="dropdown-item" :to="{name: 'Diapers'}">Models</router-link>
+            <router-link class="dropdown-item" :to="{name: 'Models'}">Models</router-link>
           </div>
         </li>
-        <li class="nav-item">
+        <!--<li class="nav-item">
           <router-link to="/diapers" class="nav-link">
               <i class="fas fa-fw fa-chart-area"></i>
               <span>Diapers</span>
           </router-link>
-        </li>
+        </li>-->
         <li class="nav-item">
           <router-link :to="{name: 'Diapers'}" class="nav-link">
             <i class="fas fa-fw fa-table"></i>

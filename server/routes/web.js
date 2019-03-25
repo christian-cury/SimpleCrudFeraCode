@@ -12,8 +12,8 @@ const modelResource = require('./resources/ModelResource');
 /*
   Routes
   */
-router.use('/diaper', diaperResource);
-router.use('/model', modelResource);
+router.use('/api/diaper', diaperResource);
+router.use('/api/model', modelResource);
 
 
 module.exports = router;

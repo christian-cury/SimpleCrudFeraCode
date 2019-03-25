@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const URL = 'diaper';
+const URL = '/api/diaper';
 
 class DiaperService {
 
@@ -39,6 +39,44 @@ class DiaperService {
         const res = await axios.get(`${URL}/${id}`);
         const data = await res.data;
         resolve(await data);
+      } catch (error) {
+        reject(error);
+      }
+    })
+  }
+
+  static createDiaper(diaper) {
+    return new Promise(async (resolve, reject) => {
+      try {
+        const res = await axios.post(`${URL}/create`, {
+          diaper
+        });
+        const data = await res.data;
+        resolve(await data);
+      } catch (error) {
+        reject(error);
+      }
+    });
+  }
+
+  static deleteDiaper(diaperId) {
+    return new Promise(async (resolve, reject) => {
+      try {
+        const res = await axios.delete(`${URL}/delete/${diaperId}`);
+        const data = res.data;
+        resolve(data);
+      } catch (error) {
+        reject(error);
+      }
+    });
+  }
+
+  static archiveDiaper(diaperId) {
+    return new Promise(async (resolve, reject) => {
+      try {
+        const res = await axios.delete(`${URL}/deactivate/${diaperId}`);
+        const data = res.data;
+        resolve(data);
       } catch (error) {
         reject(error);
       }

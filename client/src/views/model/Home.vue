@@ -16,7 +16,8 @@
     <div class="row" v-if="error">
       <div class="col-12">
         <div class="alert alert-danger">
-          Ocorreu um erro: {{ error }}
+          An error has occurred: {{ error }}.
+          <br><a class="alert-link" href="" onclick="window.location.reload()">Click here to refresh</a>
         </div>
       </div>
     </div>
@@ -29,12 +30,14 @@
                 <div class="col-12">
                   <router-link :to="{name: 'NewModel'}">
                     <button class="btn btn-primary waves-effect waves-light float-right">
-                        <i class="ion-plus"></i>
-                        Add model
+                      <i class="ion-plus"></i>
+                      Add model
                     </button>
                   </router-link>
-                </div> <!-- END COL -->
-              </div> <!-- END ROW -->
+                </div>
+                <!-- END COL -->
+              </div>
+              <!-- END ROW -->
 
               <div class="row">
                 <div class="col-12">
@@ -56,7 +59,7 @@
                             v-bind:index="index"
                             v-bind:key="row.id"
                           >
-                            <td>{{ row.data.model }}</td>
+                            <td>{{ row.data.model.model }}</td>
                             <td>
                               <center>
                                 <div>
@@ -64,61 +67,104 @@
                                     <template slot="button-content">
                                       <i class="ion-navicon-round"></i> Actions
                                     </template>
-                                    <!--<b-dropdown-item>-->
-                                    <!--<router-link :to="{name: 'StudentView', params: {id: row.id}}">-->
-                                    <!--<i class="ion-eye"></i>-->
-                                    <!--Dados do aluno-->
-                                    <!--</router-link>-->
-                                    <!--</b-dropdown-item>-->
-                                    <b-dropdown-item>
-                                      <!-- <router-link :to="{name: 'TeacherEdit', params: {id: row.id}}">
-                                                                        <i class="ion-ios7-paper-outline"></i>
-                                                                        Alterar dados do professor
-                                      </router-link>-->
-                                    </b-dropdown-item>
+                                    <!-- <b-dropdown-item>
+                                      <router-link :to="{name: 'StudentView', params: {id: row.id}}">
+                                        <i class="ion-eye"></i>
+                                        Dados do aluno
+                                      </router-link>
+                                    </b-dropdown-item>-->
+                                    <!-- <b-dropdown-item>
+                                      <router-link :to="{name: 'TeacherEdit', params: {id: row.id}}">
+                                        <i class="ion-ios7-paper-outline"></i>
+                                        Alterar dados do professor
+                                      </router-link>
+                                    </b-dropdown-item>-->
                                     <b-dropdown-divider></b-dropdown-divider>
-                                    <!-- <b-dropdown-item v-on:click="deleteEntry(row.id, index)"> <i class="ion-trash-b"></i> Arquivar professor</b-dropdown-item> -->
+                                    <b-dropdown-item v-on:click="deleteEntry(row.id, index)">
+                                      <i class="ion-trash-b"></i>
+                                      Delete model
+                                    </b-dropdown-item>
                                   </b-dropdown>
                                 </div>
                               </center>
                             </td>
                           </tr>
-                          <!-- <pagination :data="rows" :show-disabled="true" :limit="3" @pagination-change-page="getRows"></pagination> -->
                         </tbody>
                       </table>
-                    </div> <!-- END RESPONSIVE TABLE -->
-                  </div> <!-- END TABLE REP -->
-                </div> <!-- END COL -->
-              </div> <!-- END ROW -->
-            </div> <!-- END COL -->
-          </div> <!-- END COL -->
-        </div> <!-- END CARD -->
-      </div> <!-- END COL -->
-    </div> <!-- END ROW -->
-  </div> <!-- END COL -->
+                    </div>
+                    <!-- END RESPONSIVE TABLE -->
+                  </div>
+                  <!-- END TABLE REP -->
+                </div>
+                <!-- END COL -->
+              </div>
+              <!-- END ROW -->
+            </div>
+            <!-- END COL -->
+          </div>
+          <!-- END COL -->
+        </div>
+        <!-- END CARD -->
+      </div>
+      <!-- END COL -->
+    </div>
+    <!-- END ROW -->
+  </div>
+  <!-- END COL -->
 </template>
 
 <script>
-import DiaperService from "@/services/DiaperService";
+import ModelService from "@/services/ModelService";
 
 export default {
   name: "home",
   data() {
     return {
       rows: {},
-      error: ''
+      error: ""
     };
   },
   async beforeCreate() {},
   async mounted() {},
   async created() {
     try {
-      this.rows = await DiaperService.getDiapers();
+      this.rows = await ModelService.getModels();
     } catch (err) {
       this.error = err;
     }
   },
   methods: {
+    async deleteEntry(id, index) {
+      await this.$swal({
+        title: "Confirmation",
+        text: "You really sure want delete this data?",
+        type: "warning",
+        showCancelButton: true,
+        confirmButtonText: "Yeah, i sure",
+        cancelButtonText: "No"
+      }).then(async result => {
+        if (result.value) {
+          await ModelService.deleteModel(id).then(async () => {
+            const modelName = await this.rows[index].data.model.model;
+            await this.rows.splice(index, 1);
+            await this.$swal(
+              'Deleted',
+              `Model '${modelName}' delete with success`,
+              'success'
+            );
+          }).catch(async error => {
+            this.error = error;
+            await this.$swal(
+              'Error',
+              'An error has occurred',
+              'error'
+            );
+          });
+        } else if (result.dismiss === this.$swal.DismissReason.cancel) {
+          await this.$swal("Canceled", "You cancelled the action. Your data is safe.", "error");
+        }
+      });
+    }
   }
 };
 </script>

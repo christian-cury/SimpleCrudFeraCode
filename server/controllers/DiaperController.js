@@ -8,13 +8,18 @@ const COUCHDB_DBNAME = process.env.COUCHDB_DBNAME || 'feracode';
 
 exports.index = async function(req, res) {
   const db = await couchdb.use(COUCHDB_DBNAME);
-  await db.list().then(async docs => {
-    for(var a in docs.rows) {
-      let id = docs.rows[a].id;
-      await db.get(id, { rev_info: true }).then(doc => {
-        docs.rows[a].data = doc;
-      });
-    }
+  await db.list({include_docs: true}).then(async docs => {
+    const datas = [];
+    var activeds = 0;
+    await docs.rows.forEach(async doc => {
+      const actived = await doc.doc.active;
+      if(actived) {
+        activeds++;
+        await datas.push(doc);
+      }
+    });
+    docs.total_rows = activeds;
+    docs.rows = datas;
     Logger.info(`User (IP=${req.ip}) retrieve all diapers. Body=${docs}`);
     await res.send({
       code: 200,
@@ -39,11 +44,11 @@ exports.create = function(req, res) {
 
 exports.store = async function(req, res) {
   const db = await couchdb.use(COUCHDB_DBNAME);
-  var model = req.body.model;
-  var description = req.body.description;
-  var availableL = req.body.availableL;
-  var availableM = req.body.availableM;
-  var availableP = req.body.availableP;
+  var model = req.body.model || req.body.diaper.model;
+  var description = req.body.description || req.body.diaper.description;
+  var availableL = req.body.availableL || req.body.diaper.availableL;
+  var availableM = req.body.availableM || req.body.diaper.availableM;
+  var availableP = req.body.availableP || req.body.diaper.availableP;
   var boughtL = 0;
   var boughtM = 0;
   var boughtP = 0;

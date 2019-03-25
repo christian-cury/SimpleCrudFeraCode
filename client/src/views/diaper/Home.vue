@@ -13,7 +13,8 @@
     <div class="row" v-if="error">
       <div class="col-12">
         <div class="alert alert-danger">
-          An error has occurred: {{ error }}
+          An error has occurred: {{ error }}.
+          <br><a class="alert-link" href="" onclick="window.location.reload()">Click here to refresh</a>
         </div>
       </div>
     </div>
@@ -55,8 +56,8 @@
                             v-bind:index="index"
                             v-bind:key="row.id"
                           >
-                            <td>{{ row.data.model}}</td>
-                            <td>{{ row.data.description }}</td>
+                            <td>{{ row.doc.model}}</td>
+                            <td>{{ row.doc.description }}</td>
                             <td>{{ getSizes(index) }}</td>
                             <td>
                               <center>
@@ -78,7 +79,9 @@
                                       </router-link>-->
                                     </b-dropdown-item>
                                     <b-dropdown-divider></b-dropdown-divider>
-                                    <!-- <b-dropdown-item v-on:click="deleteEntry(row.id, index)"> <i class="ion-trash-b"></i> Arquivar professor</b-dropdown-item> -->
+                                    <b-dropdown-item v-on:click="archiveEntry(row.id, index)"> 
+                                      <i class="ion-trash-b"></i> Archive diaper
+                                    </b-dropdown-item>
                                   </b-dropdown>
                                 </div>
                               </center>
@@ -121,7 +124,7 @@ export default {
   },
   methods: {
     getSizes: function(index) {
-      const data = this.rows[index].data;
+      const data = this.rows[index].doc;
       const availableL = data.availableL;
       const availableM = data.availableM;
       const availableP = data.availableP;
@@ -131,6 +134,36 @@ export default {
       if (availableM > 0) sizes.push("M");
       if (availableP > 0) sizes.push("P");
       return sizes.join(" - ");
+    },
+    async archiveEntry(id, index) {
+      await this.$swal({
+        title: "Confirmation",
+        text: "You really sure want archive this data?",
+        type: "warning",
+        showCancelButton: true,
+        confirmButtonText: "Yeah, i sure",
+        cancelButtonText: "No"
+      }).then(async result => {
+        if (result.value) {
+          await DiaperService.archiveDiaper(id).then(async () => {
+            await this.rows.splice(index, 1);
+            await this.$swal(
+              'Archived',
+              `Diaper ${index} archived with success`,
+              'success'
+            );
+          }).catch(async error => {
+            this.error = error;
+            await this.$swal(
+              'Error',
+              'An error has occurred',
+              'error'
+            );
+          });
+        } else if (result.dismiss === this.$swal.DismissReason.cancel) {
+          await this.$swal("Canceled", "You cancelled the action. Your data is safe.", "error");
+        }
+      });
     }
   }
 };
