@@ -5,6 +5,7 @@ dotenv.config();
 const COUCHDB_HOST = process.env.COUCHDB_HOST || 'http://localhost:5984';
 const COUCHDB_DBNAME = process.env.COUCHDB_DBNAME || 'feracode';
 const COUCHDB_MODEL_DBNAME = process.env.COUCHDB_DBNAME_MODEL || 'models';
+const COUCHDB_SALES_DBNAME = process.env.COUCHDB_SALES_MODEL || 'sales';
 
 const express = require('express');
 const nano = require('nano')(COUCHDB_HOST);
@@ -26,5 +27,6 @@ async function createDatabase(dbName) {
 
 createDatabase(COUCHDB_DBNAME);
 createDatabase(COUCHDB_MODEL_DBNAME);
+createDatabase(COUCHDB_SALES_DBNAME);
 
 module.exports = nano;
