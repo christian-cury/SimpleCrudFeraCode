@@ -27,7 +27,7 @@
                 <div class="col-12">
                   <router-link :to="{name: 'NewDiaper'}">
                     <button class="btn btn-primary waves-effect waves-light float-right">
-                        <i class="ion-plus"></i>
+                        <i class="fa fa-plus"></i>
                         Add diaper
                     </button>
                   </router-link>
@@ -66,21 +66,27 @@
                                     <template slot="button-content">
                                       <i class="ion-navicon-round"></i> Actions
                                     </template>
-                                    <!--<b-dropdown-item>-->
-                                    <!--<router-link :to="{name: 'StudentView', params: {id: row.id}}">-->
-                                    <!--<i class="ion-eye"></i>-->
-                                    <!--Dados do aluno-->
-                                    <!--</router-link>-->
-                                    <!--</b-dropdown-item>-->
                                     <b-dropdown-item>
+                                      <router-link :to="{name: 'BuyDiaper', params: {id: row.id}}">
+                                        <i class="fas fa-cart-plus"></i>
+                                        Buy diaper
+                                      </router-link>
+                                    </b-dropdown-item>
+                                    <b-dropdown-item>
+                                      <router-link :to="{name: 'ViewDiaper', params: {id: row.id}}">
+                                        <i class="fa fa-eye"></i>
+                                        More details
+                                      </router-link>
+                                    </b-dropdown-item>
+                                    <!-- <b-dropdown-item> -->
                                       <!-- <router-link :to="{name: 'TeacherEdit', params: {id: row.id}}">
                                                                         <i class="ion-ios7-paper-outline"></i>
                                                                         Alterar dados do professor
                                       </router-link>-->
-                                    </b-dropdown-item>
+                                    <!-- </b-dropdown-item> -->
                                     <b-dropdown-divider></b-dropdown-divider>
                                     <b-dropdown-item v-on:click="archiveEntry(row.id, index)"> 
-                                      <i class="ion-trash-b"></i> Archive diaper
+                                      <i class="fa fa-trash"></i> Archive diaper
                                     </b-dropdown-item>
                                   </b-dropdown>
                                 </div>

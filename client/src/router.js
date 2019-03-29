@@ -21,6 +21,16 @@ const routes = [
     component: () => import('./views/diaper/New.vue')
   },
   {
+    path: '/diaper/buy/:id',
+    name: 'BuyDiaper',
+    component: () => import('./views/diaper/Buy.vue')
+  },
+  {
+    path: '/diaper/:id',
+    name: 'ViewDiaper',
+    component: () => import('./views/diaper/View.vue')
+  },
+  {
     path: '/models',
     name: 'Models',
     component: () => import('./views/model/Home.vue')

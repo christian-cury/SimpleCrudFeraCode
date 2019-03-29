@@ -14,7 +14,7 @@
           <div class="card-body">
             <router-link :to="{name: 'Models'}">
               <button class="btn btn-warning waves-effect waves-light" style="float: right">
-                <i class="ion-chevron-left"></i>
+                <i class="fa fa-arrow-left"></i>
                 Back
               </button>
             </router-link>

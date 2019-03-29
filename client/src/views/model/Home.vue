@@ -30,7 +30,7 @@
                 <div class="col-12">
                   <router-link :to="{name: 'NewModel'}">
                     <button class="btn btn-primary waves-effect waves-light float-right">
-                      <i class="ion-plus"></i>
+                      <i class="fa fa-plus"></i>
                       Add model
                     </button>
                   </router-link>
@@ -81,7 +81,7 @@
                                     </b-dropdown-item>-->
                                     <b-dropdown-divider></b-dropdown-divider>
                                     <b-dropdown-item v-on:click="deleteEntry(row.id, index)">
-                                      <i class="ion-trash-b"></i>
+                                      <i class="fa fa-trash"></i>
                                       Delete model
                                     </b-dropdown-item>
                                   </b-dropdown>
