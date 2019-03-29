@@ -83,9 +83,9 @@ export default {
     try {
       const data = await DiaperService.getDiapers();
       data.map(async doc => {
-        const boughtL = await doc.data.boughtL;
-        const boughtM = await doc.data.boughtM;
-        const boughtP = await doc.data.boughtP;
+        const boughtL = await doc.doc.boughtL;
+        const boughtM = await doc.doc.boughtM;
+        const boughtP = await doc.doc.boughtP;
         this.totalSales += (parseInt(boughtL) + parseInt(boughtM) + parseInt(boughtP));
       });
     } catch(err) {
