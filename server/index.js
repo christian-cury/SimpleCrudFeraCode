@@ -19,14 +19,14 @@ const database = require('./database/couchdb');
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cors());
+
+app.use(routes);
+
 app.enable('trust proxy');
 if(APP_ENV == 'production') {
     app.use(express.static(__dirname + '/public/'));
     app.get(/.*/, (req, res) => res.sendFile(__dirname + '/public/index.html'));
 }
-
-app.use(routes);
-
 
 app.listen(APP_PORT, () => {
     console.log('server started in port', APP_PORT);

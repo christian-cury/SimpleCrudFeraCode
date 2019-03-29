@@ -8,7 +8,18 @@ const COUCHDB_DBNAME = process.env.COUCHDB_DBNAME || 'feracode';
 
 exports.index = async function(req, res) {
   const db = await couchdb.use(COUCHDB_DBNAME);
-  await db.list().then(async docs => {
+  await db.list({include_docs: true}).then(async docs => {
+    const datas = [];
+    var activeds = 0;
+    await docs.rows.forEach(async doc => {
+      const actived = await doc.doc.active;
+      if(actived) {
+        activeds++;
+        await datas.push(doc);
+      }
+    });
+    docs.total_rows = activeds;
+    docs.rows = datas;
     Logger.info(`User (IP=${req.ip}) retrieve all diapers. Body=${docs}`);
     await res.send({
       code: 200,
@@ -33,11 +44,11 @@ exports.create = function(req, res) {
 
 exports.store = async function(req, res) {
   const db = await couchdb.use(COUCHDB_DBNAME);
-  var model = req.body.model;
-  var description = req.body.description;
-  var availableL = req.body.availableL;
-  var availableM = req.body.availableM;
-  var availableP = req.body.availableP;
+  var model = req.body.model || req.body.diaper.model;
+  var description = req.body.description || req.body.diaper.description;
+  var availableL = req.body.availableL || req.body.diaper.availableL;
+  var availableM = req.body.availableM || req.body.diaper.availableM;
+  var availableP = req.body.availableP || req.body.diaper.availableP;
   var boughtL = 0;
   var boughtM = 0;
   var boughtP = 0;
@@ -75,7 +86,7 @@ exports.show = async function(req, res) {
   const db = await couchdb.use(COUCHDB_DBNAME);
   var id = req.params.id;
   await db.get(id, { rev_info: true }).then(async doc => {
-    Logger.inf(`User (IP=${req.ip}) retrieved diaper details. Body=${dov}`);
+    Logger.info(`User (IP=${req.ip}) retrieved diaper details. Body=${doc}`);
     await res.send({
       code: 200,
       message: 'diaper retrieve with success',
@@ -105,6 +116,7 @@ exports.update = async function(req, res) {
     var boughtL = req.body.boughtL || doc.boughtL;
     var boughtM = req.body.boughtM || doc.boughtM;
     var boughtP = req.body.boughtP || doc.boughtP;
+    var actived = doc.active;
     await db.insert({
       model: model,
       description: description,
@@ -114,6 +126,7 @@ exports.update = async function(req, res) {
       boughtL: boughtL,
       boughtM: boughtM,
       boughtP: boughtP,
+      active: actived,
       _rev: doc._rev
     }, id).then(async (body) => {
       Logger.info(`User (IP=${req.ip}) update a diaper data. Body=${body}`);
@@ -190,8 +203,24 @@ async function changeActiveStatus(activeStatus, req, res) {
   const db = await couchdb.use(COUCHDB_DBNAME);
   var id = req.params.id;
   await db.get(id).then(async doc => {
+    var model = doc.model;
+    var description = doc.description;
+    var availableL = doc.availableL;
+    var availableM = doc.availableM;
+    var availableP = doc.availableP;
+    var boughtL = doc.boughtL;
+    var boughtM = doc.boughtM;
+    var boughtP = doc.boughtP;
     var actived = activeStatus;
     await db.insert({
+      model: model,
+      description: description,
+      availableL: availableL,
+      availableM: availableM,
+      availableP: availableP,
+      boughtL: boughtL,
+      boughtM: boughtM,
+      boughtP: boughtP,
       active: actived,
       _rev: doc._rev
     }, id).then(async (body) => {
